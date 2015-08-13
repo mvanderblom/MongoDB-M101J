@@ -8,7 +8,9 @@
 	<packaging>pom</packaging>
 
 	<modules>
-		<module>M101J</module>
+		<module>week1</module>
+		<module>spark-freemarker-mongodb</module>
+		<module>create_blog_authors</module>
 	</modules>
 
 </project>
