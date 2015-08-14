@@ -53,7 +53,7 @@ public class RemoveStudentsLowestScore {
 			MongoCollection<Document> collection = database.getCollection("grades");
 			
 			MongoCursor<Document> iterator = collection.find()
-					.sort(orderBy(ascending("student_id", "score")))
+					.sort(ascending("student_id", "score"))
 					.iterator();
 			
 			Integer lastStudentId = null;
@@ -65,7 +65,7 @@ public class RemoveStudentsLowestScore {
 				{
 					lastStudentId = studentId;
 					System.out.println(lastStudentId);
-//					collection.deleteOne(Filters.eq("_id", gradingDoc.get("_id")));
+					collection.deleteOne(gradingDoc);
 				}
 			}
 			
