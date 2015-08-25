@@ -1,17 +1,21 @@
 package course;
 
+import com.mongodb.BasicDBObject;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+
 import static com.mongodb.client.model.Sorts.*;
 import static com.mongodb.client.model.Filters.*;
 
 import org.bson.Document;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class BlogPostDAO {
-    MongoCollection<Document> postsCollection;
+    private static final String COMMENTS_KEY = "comments";
+	MongoCollection<Document> postsCollection;
 
     public BlogPostDAO(final MongoDatabase blogDatabase) {
         postsCollection = blogDatabase.getCollection("posts");
@@ -51,7 +55,6 @@ public class BlogPostDAO {
         permalink = permalink.toLowerCase();
 
 
-        // XXX HW 3.2, Work Here
         // Remember that a valid post has the following keys:
         // author, body, permalink, tags, comments, date
         //
@@ -63,8 +66,15 @@ public class BlogPostDAO {
 
         // Build the post object and insert it
         Document post = new Document();
-
-
+        post.put("author", username);
+        post.put("title", title);
+        post.put("body", body);
+        post.put("permalink", permalink);
+        post.put("tags", tags);
+        post.put(COMMENTS_KEY, new ArrayList<Document>());
+        post.put("date", new Date());
+        this.postsCollection.insertOne(post);
+        
         return permalink;
     }
 
@@ -83,10 +93,19 @@ public class BlogPostDAO {
     // Append a comment to a blog post
     public void addPostComment(final String name, final String email, final String body, final String permalink) {
 
-        // XXX HW 3.3, Work Here
-        // Hints:
-        // - email is optional and may come in NULL. Check for that.
-        // - best solution uses an update command to the database and a suitable
-        //   operator to append the comment on to any existing list of comments
+    	// Hints:
+    	// - email is optional and may come in NULL. Check for that.
+    	// - best solution uses an update command to the database and a suitable
+    	//   operator to append the comment on to any existing list of comments
+
+    	Document comment = new Document();
+    	comment.put("author", name);
+    	comment.put("body", body);
+    	if(email != null && !"".equals(email))
+    		comment.put("email", email);
+    	
+    	Document post = this.findByPermalink(permalink);
+    	
+    	this.postsCollection.updateOne(post, new BasicDBObject("$push", new BasicDBObject("comments", comment)));
     }
 }
