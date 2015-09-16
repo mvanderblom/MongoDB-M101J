@@ -1,0 +1,33 @@
+db.images.count(
+	{
+		"tags":"sunrises"
+	}
+);
+// 49887
+
+//Create index on images for speedy lookup of imageId in albums
+db.albums.createIndex(
+	{
+		"images": 1
+	}
+);
+
+var cursor = db.images.find();
+
+while(cursor.hasNext()) {
+	var document = cursor.next();
+	var imageId = document._id;
+	
+	var albumCount = db.albums.count({"images":imageId});
+	if(albumCount == 0){
+		db.images.remove({"_id":imageId});
+	}
+	
+}
+
+db.images.count(
+	{
+		"tags":"sunrises"
+	}
+);
+// 44787

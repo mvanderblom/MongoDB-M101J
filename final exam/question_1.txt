@@ -1,0 +1,21 @@
+db.messages.find(
+	{
+		"headers.From":{
+			"$eq": "andrew.fastow@enron.com"
+		}, 
+		"headers.To":{
+			"$eq": "john.lavorato@enron.com"
+		}
+	}
+).pretty();
+
+db.messages.count(
+	{
+		"headers.From":{
+			"$eq": "andrew.fastow@enron.com"
+		}, 
+		"headers.To":{
+			"$eq": "jeff.skilling@enron.com"
+		}
+	}
+)

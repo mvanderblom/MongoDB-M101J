@@ -1,0 +1,34 @@
+db.messages.aggregate([ 
+	{ 
+		"$unwind" : "$headers.To" 
+	},
+	{
+		"$group" : { 
+			"_id" : { 
+				"_id": "$_id", 
+				"from": "$headers.From",
+			},
+			"to": {"$addToSet": "$headers.To"}
+		}
+	},
+	{ 
+		"$unwind" : "$to" 
+	},
+	{
+		"$group": {
+			"_id" : {
+				"from": "$_id.from",
+				"to": "$to"
+			},
+			"num_emails" : {"$sum": 1}
+		}
+	},
+	{
+		"$sort": {
+			"num_emails": -1
+		}
+	},
+	{
+		"$limit": 3
+	}
+]);
